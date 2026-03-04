@@ -1,0 +1,11 @@
+<header class="topbar">
+  <div class="brand">Guidebook Workspace</div>
+  <% if (currentUser) { %>
+    <div class="topbar-right">
+      <span class="badge"><%= currentUser.username %> (<%= currentUser.role %>)</span>
+      <form action="/logout" method="post">
+        <button type="submit" class="btn btn-secondary">Logout</button>
+      </form>
+    </div>
+  <% } %>
+</header>

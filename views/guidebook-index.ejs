@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= guidebook.title %></title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="gb-body">
+    <%- include('partials-header') %>
+
+    <main class="gb-wrap">
+      <section class="gb-home">
+        <h1 class="gb-title"><%= guidebook.title %></h1>
+        <p class="muted">Level 1 Workspace</p>
+
+        <div class="level-grid">
+          <section class="card level-card">
+            <h2>Level 2 - Guidebook</h2>
+            <% if (isAdmin) { %>
+              <form action="/guidebook/books" method="post" class="new-doc-form">
+                <input type="text" name="title" placeholder="Guidebook level 2 baru" required />
+                <button type="submit" class="icon-btn" title="Tambah guidebook">+</button>
+              </form>
+            <% } %>
+
+            <ul class="doc-nav mt-sm">
+              <% books.forEach((book) => { %>
+                <li>
+                  <a href="/guidebook?book=<%= book.id %>" class="<%= selectedBook && selectedBook.id === book.id ? 'active' : '' %>">
+                    <%= book.title %>
+                  </a>
+                </li>
+              <% }) %>
+            </ul>
+          </section>
+
+          <section class="card level-card">
+            <h2>Level 3 - Sub Dokumen</h2>
+            <% if (selectedBook) { %>
+              <p class="muted">Dalam: <strong><%= selectedBook.title %></strong></p>
+
+              <% if (isAdmin) { %>
+                <form action="/guidebook/books/<%= selectedBook.id %>/docs" method="post" class="new-doc-form">
+                  <input type="text" name="title" placeholder="Sub dokumen baru" required />
+                  <button type="submit" class="icon-btn" title="Tambah dokumen">+</button>
+                </form>
+              <% } %>
+
+              <ul class="doc-list mt-sm">
+                <% docs.forEach((item) => { %>
+                  <li>
+                    <a href="/guidebook/docs/<%= item.id %>" class="doc-link doc-link-sm">
+                      <span class="doc-icon">📄</span>
+                      <span><%= item.title %></span>
+                    </a>
+                  </li>
+                <% }) %>
+              </ul>
+            <% } else { %>
+              <p class="muted">Belum ada guidebook level 2.</p>
+            <% } %>
+          </section>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

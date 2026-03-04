@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= doc.title %> - <%= guidebook.title %></title>
+    <link rel="stylesheet" href="/styles.css" />
+    <% if (isAdmin) { %>
+      <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet" />
+    <% } %>
+  </head>
+  <body class="gb-body">
+    <%- include('partials-header') %>
+
+    <main class="gb-wrap doc-wrap">
+      <aside class="doc-sidebar">
+        <h2><a href="/guidebook" class="muted-link"><%= guidebook.title %></a></h2>
+        <p class="muted">Level 1</p>
+
+        <% books.forEach((book) => { %>
+          <div class="book-group">
+            <h3 class="book-title <%= parentBook && parentBook.id === book.id ? 'active' : '' %>"><%= book.title %></h3>
+            <ul class="doc-nav">
+              <% (book.docs || []).forEach((item) => { %>
+                <li>
+                  <a href="/guidebook/docs/<%= item.id %>" class="<%= item.id === doc.id ? 'active' : '' %>"><%= item.title %></a>
+                </li>
+              <% }) %>
+            </ul>
+          </div>
+        <% }) %>
+      </aside>
+
+      <section class="doc-main">
+        <div class="doc-top-row">
+          <h1><%= doc.title %></h1>
+          <div class="row-actions">
+            <% if (isAdmin) { %>
+              <button type="button" class="btn" id="downloadPdfBtn" data-pdf-action="/guidebook/docs/<%= doc.id %>/pdf">
+                Unduh PDF
+              </button>
+            <% } else { %>
+              <a href="/guidebook/docs/<%= doc.id %>/pdf" class="btn">Unduh PDF</a>
+            <% } %>
+          </div>
+        </div>
+
+        <p class="muted">Terakhir update: <%= new Date(doc.updatedAt).toLocaleString() %></p>
+
+        <% if (saved) { %>
+          <div class="alert success">Perubahan berhasil disimpan.</div>
+        <% } %>
+
+        <% if (isAdmin) { %>
+          <form action="/guidebook/docs/<%= doc.id %>/save" method="post" id="editorForm" class="editor-form">
+            <label>
+              Judul Dokumen
+              <input type="text" name="title" value="<%= doc.title %>" required />
+            </label>
+
+            <label>Konten</label>
+            <div id="toolbar">
+              <span class="ql-formats">
+                <select class="ql-header">
+                  <option value="1">Heading 1</option>
+                  <option value="2">Heading 2</option>
+                  <option value="3">Heading 3</option>
+                  <option selected>Normal</option>
+                </select>
+              </span>
+              <span class="ql-formats">
+                <button class="ql-bold"></button>
+                <button class="ql-italic"></button>
+                <button class="ql-underline"></button>
+                <button class="ql-strike"></button>
+              </span>
+              <span class="ql-formats">
+                <button class="ql-list" value="ordered"></button>
+                <button class="ql-list" value="bullet"></button>
+                <button class="ql-blockquote"></button>
+                <button class="ql-code-block"></button>
+              </span>
+              <span class="ql-formats">
+                <button class="ql-link"></button>
+                <button class="ql-image"></button>
+              </span>
+              <span class="ql-formats">
+                <select class="ql-align"></select>
+                <select class="ql-color"></select>
+                <select class="ql-background"></select>
+                <button class="ql-clean"></button>
+              </span>
+            </div>
+            <div class="image-controls" id="imageControls">
+              <div class="image-controls-header">Ukuran Gambar</div>
+              <div class="image-controls-row">
+                <input type="range" id="imageSizeRange" min="10" max="100" step="5" value="100" disabled />
+                <span id="imageSizeValue">100%</span>
+              </div>
+              <div class="image-preset-row">
+                <button type="button" class="size-preset-btn" data-size="25" disabled>25%</button>
+                <button type="button" class="size-preset-btn" data-size="50" disabled>50%</button>
+                <button type="button" class="size-preset-btn" data-size="75" disabled>75%</button>
+                <button type="button" class="size-preset-btn" data-size="100" disabled>100%</button>
+              </div>
+              <p class="muted image-controls-help">Klik gambar di editor untuk mengatur ukuran.</p>
+            </div>
+            <div id="editor" class="quill-editor"><%- doc.contentHtml %></div>
+            <input type="hidden" id="contentHtml" name="contentHtml" />
+
+            <button type="submit" class="btn">Simpan Perubahan</button>
+          </form>
+        <% } else { %>
+          <article class="doc-preview"><%- doc.contentHtml %></article>
+        <% } %>
+      </section>
+    </main>
+
+    <% if (isAdmin) { %>
+      <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
+      <script src="/editor.js"></script>
+    <% } %>
+  </body>
+</html>
